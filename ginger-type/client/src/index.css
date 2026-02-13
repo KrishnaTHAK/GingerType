@@ -1,0 +1,29 @@
+/* index.css */
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Change these to allow your sky blue to show */
+  color-scheme: light; 
+  color: #355168;
+  /* Remove background-color from here entirely */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  /* Change place-items to start or stretch so your layout doesn't break */
+  display: block; 
+  min-width: 320px;
+  min-height: 100vh;
+  /* ADD YOUR SKY BLUE HERE */
+  background-color: #9bc0d8; 
+}
+
+/* Delete or comment out the @media (prefers-color-scheme: light) block 
+   at the bottom so it doesn't force the background back to white */
