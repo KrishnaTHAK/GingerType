@@ -1,22 +1,33 @@
 import '../MainBody.css';
 
-function ChooseText() {
+const TEXT_TYPES = [
+    { label: 'Classic Literature', value: 'classicLiterature'},
+    { label: 'News Article', value: 'newsArticle'},
+    { label: 'Technical Text', value: 'technicalText'},
+    { label: 'Random Word Clouds', value: 'randomWordClouds'},
+];
+
+function TextSelection({
+    textType,
+    setTextType
+}) {
     return (
         <div className="settings-choose-text">
             <span>Choose Text :</span>
+            
             <ul className="text-list">
-            <li className="active">Classic Literature</li>
-            <li className="active">Programming Code</li>
-            <li className="active">News Articles</li>
-            <li className="active">Classic Literature</li>
-            <li className="active">Programming Code</li>
-            <li className="active">News Articles</li>
-            <li className="active">Classic Literature</li>
-            <li className="active">Programming Code</li>
-            <li className="active">News Articles</li>
+                {TEXT_TYPES.map(({ label, value }) => (
+                    <li
+                        key={value}
+                        className={textType === value ? "active" : ""}
+                        onClick={() => setTextType(value)}
+                    >
+                    {label}
+                </li>
+                ))}
             </ul>
         </div>
     );
 }
 
-export default ChooseText;
+export default TextSelection;

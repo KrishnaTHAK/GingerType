@@ -33,7 +33,9 @@
     border: 1px solid #7a7d81;
     border-radius: 12px;
     transition: background-color 0.2s ease;
+    cursor: pointer     ;
 }
 .nav-items:hover {
     background-color: #d0e1ee;
 }
+

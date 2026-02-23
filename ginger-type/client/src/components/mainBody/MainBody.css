@@ -1,80 +1,108 @@
+/* Layout */
 main {
     display: flex;
     margin: 30px;
 }
+
 .container {
     width: 75%;
-    height: 15%;
     margin-right: 40px;
 }
 
+/* Card */
 .text-display-card {
     background-color: #fffef0;
     border: 1px solid #e8e2c0;
     display: flex;
-    border-radius: 12px;
     flex-direction: column;
+    border-radius: 12px;
     padding: 2.5rem;
     margin-bottom: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     min-height: 350px;
+    position: relative; /* CRITICAL FIX: Keeps the modal overlay constrained inside this card */
 }
 
+/* Typing window: stable font/line-height + 3-line viewport */
 .typing-text {
-    font-size: 1.8rem; /* Large, readable font */
-    line-height: 1.6;
+    font-size: 1.8rem;
+    line-height: 1.6;               /* unitless is fine with rem font-size */
     color: #444;
-    margin: 0px;
+    margin: 0;
+    max-height: calc(1.6em * 3);    /* show 3 lines */
+    overflow: hidden;               /* we'll control scrollTop in JS */
+    position: relative;
 }
 
-.timer-bar {
-    margin-top: 10px;
+/* Words & characters */
+.word {
+    display: inline-block;
+    white-space: nowrap;    /* prevents mid-word breaks */
 }
 
+.char {
+    display: inline-block;
+    white-space: pre;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Visual states */
+.active-char {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.correct-char {
+    color: #2ecc71;
+}
+
+.incorrect-char {
+    color: #e74c3c;
+}
+
+/* Live stats area */
 .live-status-container {
-    border: 1px solid aquamarine;
     border-radius: 25px;
-    height: auto;
-    overflow: hidden;
     margin-top: auto;
+    overflow: hidden;
+    border: 1px solid #aee1d9; /* softer than aquamarine */
 }
 
-/* Specific styling for the stats section */
 .live-stats-bar {
-    background-color:#c0d9ec;
+    background-color: #c0d9ec;
     padding-left: 40px;
-    font-size: 30px;
+    font-size: 1.9rem;
     font-weight: 500;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-
-/* Progress bar styling */
-
 .live-stats-inside {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding: 0 40px;
     display: flex;
     justify-content: space-between;
-    font-size: larger;
+    align-items: center;
+    font-size: 1.125rem;
 }
 
 .stat-val {
     font-weight: 700;
     color: #000;
-    font-size: 35px;
+    font-size: 1.6rem;
 }
 
+/* Progress bar */
 .timer-bar {
     margin-top: 16px;
 }
+
 .test-progress {
     width: 100%;
     height: 12px;
     appearance: none;
     border-radius: 10px;
-    overflow: hidden;
     margin-top: 1rem;
+    overflow: hidden;
 }
 
 .test-progress::-webkit-progress-bar {
@@ -82,24 +110,28 @@ main {
 }
 
 .test-progress::-webkit-progress-value {
-    background-color: #74a0c1; /* Matching blue progress color */
+    background-color: #74a0c1;
     transition: width 0.3s ease;
 }
 
+/* Sidebar & controls */
 .settings-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 30px; /* Space between Language, Duration, and TextSelection */
-    background-color: rgba(255, 255, 255, 0.1); /* Subtle contrast against the sky blue */
+    gap: 30px;
     padding: 25px;
     border-radius: 15px;
-    color: #1e1e1f; /* Darker text for readability */
+    color: #1e1e1f;
     font-weight: 500;
-    font-size: 27px;
+    font-size: 1.1rem;
+    background-color: rgba(255, 255, 255, 0.04);
 }
-.language-options-container, .test-duration-options-container {
+
+/* Small helper containers */
+.language-options-container,
+.test-duration-options-container {
     margin-left: 20px;
-    font-size: 18px;
+    font-size: 1rem;
 }
 
 .settings-choose-text {
@@ -113,20 +145,19 @@ main {
     color: #000;
 }
 
-/* The card container with the scrollbar */
+/* Text list (selectable passages) */
 .text-list {
-    background-color: #fffef0; /* Warm paper background */
+    background-color: #fffef0;
     border: 1px solid #d1d1d1;
     border-radius: 10px;
     padding: 5px 0;
     margin: 0;
-    list-style: none; /* Removes the dots from image_5e5cb7.png */
-    max-height: 150px; /* Forces the scrollbar */
+    list-style: none;
+    max-height: 90px;
     overflow-y: auto;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Individual list items */
 .text-list li {
     padding: 8px 15px;
     cursor: pointer;
@@ -135,12 +166,11 @@ main {
     transition: background 0.2s ease;
 }
 
-/* Hover effect and Active state */
 .text-list li:hover {
     background-color: #ddd6d6;
 }
 
-/* Custom Scrollbar styling */
+/* Custom scrollbar for the list */
 .text-list::-webkit-scrollbar {
     width: 12px;
 }
@@ -153,5 +183,125 @@ main {
 .text-list::-webkit-scrollbar-thumb {
     background: #94a3b8;
     border-radius: 10px;
-    border: 3px solid #e6e6e6; /* Creates the padding around the thumb */
+    border: 3px solid #e6e6e6;
+}
+
+/* Difficulty buttons */
+.difficulty button {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 0;
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.difficulty button:hover {
+    background-color: #eaeaea;
+}
+
+.difficulty button.active {
+    background-color: #222;
+    color: #fff;
+    border-color: #222;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    border-radius: 12px; /* Matched the card border-radius so the overlay corners don't poke out */
+}
+
+/* Modal Box */
+.result-modal {
+    background: #1e1e2e; /* Dark theme background */
+    width: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #cdd6f4; /* Light text */
+    text-align: center;
+}
+
+/* Modal Navbar */
+.modal-navbar {
+    display: flex;
+    justify-content: space-between;
+    background: #181825;
+    padding: 10px 15px;
+    border-bottom: 1px solid #313244;
+}
+
+.modal-btn {
+    background: transparent;
+    color: #a6adc8;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.modal-btn:hover {
+    background: #313244;
+    color: #cdd6f4;
+}
+
+.modal-btn.highlight {
+    background: #89b4fa; /* Blue accent */
+    color: #11111b;
+    font-weight: bold;
+}
+
+.modal-btn.highlight:hover {
+    background: #74c7ec;
+}
+
+/* Stats Display */
+.modal-content {
+    padding: 30px 20px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #f38ba8; /* Red/Pink accent */
+}
+
+.final-stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #a6adc8;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #a6e3a1; /* Green accent */
 }
