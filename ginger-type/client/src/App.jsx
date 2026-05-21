@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/navbar/Navbar.jsx";
 import MainBody from "./components/mainBody/MainBody.jsx";
 import Footer from "./components/footer/Footer.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Profile from "./pages/Profile.jsx";
+import Stats from "./pages/Stats.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+
 
 function App() {
-  // 1. State for restarting the typing engine
   const [restartSignal, setRestartSignal] = useState(0);
-
-  // 2. State for the Help Modal visibility
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-  // Triggers a re-render in the typing engine via useEffect
-  const handleRestart = () => {
-    setRestartSignal((prev) => prev + 1);
-  };
+  const handleRestart = () => setRestartSignal((prev) => prev + 1);
 
-  // 3. Close the Help modal automatically when "Escape" is pressed
   useEffect(() => {
     if (!isHelpOpen) return;
     const handleEsc = (e) => {
@@ -26,7 +27,6 @@ function App() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isHelpOpen]);
 
-  // Data for the Help Modal
   const shortcuts = [
     { keys: ["Shift", "Enter"], action: "Reload Test" },
     { keys: ["Escape"], action: "Pause / Resume" },
@@ -39,17 +39,25 @@ function App() {
       <Navbar />
 
       <main className="content-area">
-        {/* Pass the restart signal down to trigger reset logic in TextContainer */}
-        <MainBody restartSignal={restartSignal} />
+        <Routes>
+          <Route
+            path="/"
+            element={<MainBody restartSignal={restartSignal} />}
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />;
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+        </Routes>
       </main>
 
-      {/* Pass the restart function and modal toggle function down to the buttons */}
       <Footer
         onRestart={handleRestart}
         onOpenHelp={() => setIsHelpOpen(true)}
       />
 
-      {/* 4. Inline Help Modal */}
       {isHelpOpen && (
         <div className="help-overlay" onClick={() => setIsHelpOpen(false)}>
           <div className="help-content" onClick={(e) => e.stopPropagation()}>

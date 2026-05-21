@@ -9,10 +9,21 @@ const Result = require('./models/Result')
 const upload = require('./config/cloudinary')
 const crypto = require('crypto')
 const { sendVerificationEmail, sendPasswordResetEmail, sendLeaderboardBeatenEmail } = require('./config/nodemailer')
+const analyticsRouter = require('./routes/analytics')
+const session = require('express-session')
+const passport = require('./config/passport')
 
 const app = express()
 app.use(express.json())
 app.use(cors())
+
+app.use(session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
@@ -29,6 +40,23 @@ const authenticateToken = (req, res, next) => {
         next()
     })
 }
+
+// Google OAuth routes
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    async (req, res) => {
+        const token = jwt.sign(
+            { userId: req.user._id.toString(), username: req.user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        )
+        // redirect to frontend with token
+        res.redirect(`http://localhost:3000?token=${token}`)
+    }
+)
+
 
 // register
 // update register route to send verification email
@@ -118,19 +146,21 @@ app.get('/api/auth/profile', authenticateToken, async (req, res) => {
 
 // result
 app.post('/api/results', authenticateToken, async (req, res) => {
-    const { wpm, accuracy, duration, mode } = req.body
-    const result = await Result.create({ userId: req.user.userId, wpm, accuracy, duration, mode })
+    const { wpm, accuracy, duration, mode, mistakes } = req.body
+    const result = await Result.create({ 
+        userId: req.user.userId, 
+        wpm, accuracy, duration, mode,
+        mistakes: mistakes || {}
+    })
 
     const currentUser = await User.findById(req.user.userId)
 
     if (wpm > currentUser.bestWPM) {
-        // find users who will be beaten
         const beatenUsers = await User.find({
             bestWPM: { $gt: currentUser.bestWPM, $lte: wpm },
             _id: { $ne: currentUser._id }
         })
 
-        // notify each beaten user
         for (const u of beatenUsers) {
             await sendLeaderboardBeatenEmail(u.email, u.username, currentUser.username, wpm)
         }
@@ -216,6 +246,15 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
     res.json({ totalTests, bestWPM, avgWPM, avgAccuracy })
     
 })
+
+
+// Analytics - routes ==> trend, consistency, by-duration, mistakes, best-time
+app.use('/api/analytics', authenticateToken, analyticsRouter)
+
+
+
+
+
 
 
 

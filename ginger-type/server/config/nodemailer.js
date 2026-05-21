@@ -30,7 +30,7 @@ const sendPasswordResetEmail = async (email, username, token) => {
         html: `
             <h2>Hey ${username}!</h2>
             <p>Click below to reset your password:</p>
-            <a href="http://localhost:8080/api/auth/reset-password/${token}">Reset Password</a>
+            <a href="http://localhost:3000/reset-password/${token}">Reset Password</a>
             <p>This link expires in 1 hour.</p>
         `
     })

@@ -1,0 +1,119 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    width: 100%;
+}
+
+.auth-box {
+    background: var(--card-bg, #f5f0e8);
+    padding: 2.5rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.auth-box h2 {
+    margin: 0 0 0.3rem;
+    font-size: 1.8rem;
+}
+
+.auth-subtitle {
+    color: #888;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.auth-error {
+    background: #ffe0e0;
+    color: #c00;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.auth-field {
+    margin-bottom: 1.2rem;
+}
+
+.auth-field label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-field input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background: transparent;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: #5f8a8b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.auth-btn:hover { opacity: 0.9; }
+.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+}
+
+.auth-links a { color: #5f8a8b; text-decoration: none; }
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 1.2rem 0;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.google-btn {
+    display: block;
+    text-align: center;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.google-btn:hover { background: rgba(0,0,0,0.05); }
+
+.auth-success {
+    background: #e0ffe0;
+    color: #007700;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}

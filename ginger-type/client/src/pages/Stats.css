@@ -1,0 +1,136 @@
+.stats-container {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.stats-container h2 {
+    margin-bottom: 1rem;
+}
+
+.stats-loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+}
+
+.duration-filter {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.duration-btn {
+    padding: 0.4rem 1rem;
+    border: 1px solid #5f8a8b;
+    border-radius: 20px;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: #5f8a8b;
+}
+
+.duration-btn.active {
+    background: #5f8a8b;
+    color: white;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.stats-card {
+    background: var(--card-bg, #f5f0e8);
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.stats-card h3 { margin: 0 0 1rem; }
+
+.your-rank {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    color: #5f8a8b;
+}
+
+/* Leaderboard Table */
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.lb-table th {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 2px solid #ccc;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.lb-table td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid #eee;
+}
+
+.lb-table tr.highlight td { 
+    color: #5f8a8b; 
+    font-weight: 600; 
+}
+
+/* Duration Bars */
+.duration-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.duration-bar-wrapper {
+    flex: 1;
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 10px;
+}
+
+.duration-bar {
+    height: 100%;
+    background: #5f8a8b;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Mistakes */
+.mistakes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.mistake-item {
+    background: #e8f4f4;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.mistake-char {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.mistake-count {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.no-data {
+    color: #aaa;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,131 @@
+.profile-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.profile-loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+}
+
+/* LEFT */
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 220px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #5f8a8b;
+}
+
+.avatar-upload-btn {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #5f8a8b;
+    text-decoration: underline;
+}
+
+.profile-left h2 { margin: 0; font-size: 1.4rem; }
+.profile-email { color: #888; font-size: 0.9rem; margin: 0; }
+
+.logout-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-btn:hover { opacity: 0.85; }
+
+/* RIGHT */
+.profile-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--card-bg, #f5f0e8);
+    border-radius: 10px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.stat-value { font-size: 1.8rem; font-weight: 700; }
+.stat-label { font-size: 0.8rem; color: #888; }
+
+/* Consistency */
+.consistency-card {
+    background: var(--card-bg, #f5f0e8);
+    border-radius: 10px;
+    padding: 1.2rem;
+}
+
+.consistency-card h3 { margin: 0 0 0.5rem; }
+
+.consistency-score {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #5f8a8b;
+}
+
+.consistency-score span { font-size: 1rem; color: #888; }
+.consistency-card p { color: #888; font-size: 0.9rem; margin: 0.3rem 0 0; }
+
+/* Trend */
+.trend-card {
+    background: var(--card-bg, #f5f0e8);
+    border-radius: 10px;
+    padding: 1.2rem;
+}
+
+.trend-card h3 { margin: 0 0 1rem; }
+
+.trend-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 160px;
+}
+
+.trend-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.trend-bar {
+    width: 24px;
+    background: #5f8a8b;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+}
+
+.trend-label { font-size: 0.7rem; color: #888; }
