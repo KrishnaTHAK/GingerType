@@ -7,7 +7,7 @@ import TestDuration from "./MainComponent/TestDuration.jsx";
 import History from "./MainComponent/History.jsx";
 import TextSelection from "./MainComponent/TextSelection.jsx";
 
-function MainBody({ restartSignal }) {
+function MainBody({ restartSignal, onResultSaved }) {
     const [textType, setTextType] = useState("classicLiterature");
     const [difficulty, setDifficulty] = useState("easy");
     const [duration, setDuration] = useState(60);
@@ -48,13 +48,13 @@ function MainBody({ restartSignal }) {
                 restartSignal={restartSignal}
                 onCycleCategory={cycleCategory}
                 onCycleDifficulty={cycleDifficulty}
+                onResultSaved={onResultSaved}
             />
             
             <div className="settings-sidebar">
                 <TestDuration duration={duration} setDuration={setDuration} />
                 <Difficulty difficulty={difficulty} setDifficulty={setDifficulty} />
                 <TextSelection textType={textType} setTextType={setTextType} />
-                <History />
             </div>
         </main>
     );

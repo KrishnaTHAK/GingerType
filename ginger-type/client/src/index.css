@@ -16,14 +16,23 @@
 }
 
 body {
-  margin: 0;
-  /* Change place-items to start or stretch so your layout doesn't break */
-  display: block; 
-  min-width: 320px;
-  min-height: 100vh;
-  /* ADD YOUR SKY BLUE HERE */
-  background-color: #9bc0d8; 
+    margin: 0;
+    display: block;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: #9bc0d8;
+    transition: background-color 0.3s ease;
+}
+
+[data-theme='dark'] body,
+[data-theme='dark'] {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0;
 }
 
 /* Delete or comment out the @media (prefers-color-scheme: light) block 
    at the bottom so it doesn't force the background back to white */
+
+[data-fontsize='small'] .typing-text { font-size: 1.4rem; }
+[data-fontsize='medium'] .typing-text { font-size: 1.6rem; }
+[data-fontsize='large'] .typing-text { font-size: 2rem; }

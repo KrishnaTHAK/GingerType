@@ -130,7 +130,7 @@ function Profile() {
 
             {/* WPM Trend */}
             <div className="trend-card">
-            <h3>WPM Trend (Last {analytics?.trend?.length} tests)</h3>
+            <h3>WPM Trend (Last 10 tests)</h3>
             <div className="trend-bars">
                 {analytics?.trend?.map((r, i) => (
                 <div key={i} className="trend-bar-wrapper">

@@ -12,11 +12,14 @@ const { sendVerificationEmail, sendPasswordResetEmail, sendLeaderboardBeatenEmai
 const analyticsRouter = require('./routes/analytics')
 const session = require('express-session')
 const passport = require('./config/passport')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
+
 
 const app = express()
 app.use(express.json())
 app.use(cors())
-
+app.use(helmet())
 app.use(session({
     secret: process.env.JWT_SECRET,
     resave: false,
@@ -24,6 +27,32 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+
+
+const asyncHandler = fn => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
+}
+
+
+// general rate limit for all routes
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+    message: { message: 'Too many requests, please try again later.' }
+})
+
+
+// stricter limit for auth routes
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,
+    message: { message: 'Too many auth attempts, please try again later.' }
+})
+
+app.use(generalLimiter)
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/register', authLimiter)
+app.use('/api/auth/forgot-password', authLimiter)
 
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI)
@@ -46,7 +75,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
-    async (req, res) => {
+    asyncHandler(async (req, res) => {
         const token = jwt.sign(
             { userId: req.user._id.toString(), username: req.user.username },
             process.env.JWT_SECRET,
@@ -54,13 +83,13 @@ app.get('/auth/google/callback',
         )
         // redirect to frontend with token
         res.redirect(`http://localhost:3000?token=${token}`)
-    }
+    })
 )
 
 
 // register
 // update register route to send verification email
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', asyncHandler(async (req, res) => {
     const { username, email, password } = req.body
     if (await User.findOne({ $or: [{ email }, { username }] }))
         return res.status(400).json({ message: 'User already exists' })
@@ -72,11 +101,11 @@ app.post('/api/auth/register', async (req, res) => {
     await sendVerificationEmail(email, username, verificationToken)
 
     res.status(201).json({ message: 'User registered! Please verify your email.' })
-})
+}))
 
 
 // verify email
-app.get('/api/auth/verify/:token', async (req, res) => {
+app.get('/api/auth/verify/:token', asyncHandler(async (req, res) => {
     const user = await User.findOneAndUpdate(
         { verificationToken: req.params.token },
         { isVerified: true, verificationToken: null },
@@ -84,11 +113,11 @@ app.get('/api/auth/verify/:token', async (req, res) => {
     )
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' })
     res.json({ message: 'Email verified successfully!' })
-})
+}))
 
 
 // login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', asyncHandler(async (req, res) => {
     const { username, password } = req.body
     const user = await User.findOne({ username })
 
@@ -100,11 +129,19 @@ app.post('/api/auth/login', async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
     )
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } })
-})
+    res.json({ 
+        token, 
+        user: { 
+            id: user._id, 
+            username: user.username, 
+            email: user.email,
+            avatarUrl: user.avatarUrl  // add this
+        } 
+    })
+}))
 
 // forgot password
-app.post('/api/auth/forgot-password', async (req, res) => {
+app.post('/api/auth/forgot-password', asyncHandler(async (req, res) => {
     const { email } = req.body
     const user = await User.findOne({ email })
     if (!user) return res.status(404).json({ message: 'User not found' })
@@ -117,10 +154,10 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
     await sendPasswordResetEmail(email, user.username, resetToken)
     res.json({ message: 'Password reset email sent!' })
-})
+}))
 
 // reset password
-app.post('/api/auth/reset-password/:token', async (req, res) => {
+app.post('/api/auth/reset-password/:token', asyncHandler(async (req, res) => {
     const { password } = req.body
     const user = await User.findOne({
         resetToken: req.params.token,
@@ -135,17 +172,17 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
         resetTokenExpiry: null
     })
     res.json({ message: 'Password reset successfully!' })
-})
+}))
 
 // profile
-app.get('/api/auth/profile', authenticateToken, async (req, res) => {
+app.get('/api/auth/profile', authenticateToken, asyncHandler(async (req, res) => {
     const user = await User.findById(req.user.userId).select('-password')
     if (!user) return res.status(404).json({ message: 'User not found' })
     res.json(user)
-})
+}))
 
 // result
-app.post('/api/results', authenticateToken, async (req, res) => {
+app.post('/api/results', authenticateToken, asyncHandler(async (req, res) => {
     const { wpm, accuracy, duration, mode, mistakes } = req.body
     const result = await Result.create({ 
         userId: req.user.userId, 
@@ -169,10 +206,10 @@ app.post('/api/results', authenticateToken, async (req, res) => {
     }
 
     res.status(201).json(result)
-})
+}))
 
 // upload avatar
-app.post('/api/auth/avatar', authenticateToken, upload.single('avatar'), async (req, res) => {
+app.post('/api/auth/avatar', authenticateToken, upload.single('avatar'), asyncHandler(async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' })
 
     const user = await User.findByIdAndUpdate(
@@ -182,39 +219,39 @@ app.post('/api/auth/avatar', authenticateToken, upload.single('avatar'), async (
     ).select('-password')
 
     res.json({ message: 'Avatar updated successfully', avatarUrl: user.avatarUrl })
-})
+}))
 
 
 // result history
-app.get('/api/results', authenticateToken, async (req, res) => {
+app.get('/api/results', authenticateToken, asyncHandler(async (req, res) => {
     const results = await Result.find({ userId: req.user.userId }).sort({ createdAt: -1 })
     res.json(results)
-})
+}))
 
 
 // leaderboard  --> GENERAL
-app.get('/api/leaderboard', async (req, res) => {
+app.get('/api/leaderboard', asyncHandler(async (req, res) => {
     const leaderboard = await User.find({ bestWPM: { $gt: 0 } })
         .select('username bestWPM')
         .sort({ bestWPM: -1 })
         .limit(10)
     
     res.json(leaderboard)
-})
+}))
 
 
 // logged-in user's rank
-app.get('/api/leaderboard/rank', authenticateToken, async (req, res) => {
+app.get('/api/leaderboard/rank', authenticateToken, asyncHandler(async (req, res) => {
     const user = await User.findById(req.user.userId)
 
     const rank = await User.countDocuments({ bestWPM: { $gt: user.bestWPM } })
 
     res.json({ username: user.username, bestWPM: user.bestWPM, rank: rank + 1 })
-})
+}))
 
 
 // Leaderboard - filtered by duration (15, 30, 60)
-app.get('/api/leaderboard/:duration', async (req, res) => {
+app.get('/api/leaderboard/:duration', asyncHandler(async (req, res) => {
     const duration = parseInt(req.params.duration)
 
     const top = await Result.aggregate([
@@ -229,11 +266,11 @@ app.get('/api/leaderboard/:duration', async (req, res) => {
 
     res.json(top)
 
-})
+}))
 
 
 // user stats
-app.get('/api/stats', authenticateToken, async (req, res) => {
+app.get('/api/stats', authenticateToken, asyncHandler(async (req, res) => {
     const results = await Result.find({ userId: req.user.userId })
 
     if (results.length === 0) return res.json({ totalTests: 0, bestWPM: 0, avgWPM: 0, avgAccuracy: 0 })
@@ -245,13 +282,22 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
         
     res.json({ totalTests, bestWPM, avgWPM, avgAccuracy })
     
-})
+}))
 
 
 // Analytics - routes ==> trend, consistency, by-duration, mistakes, best-time
 app.use('/api/analytics', authenticateToken, analyticsRouter)
 
 
+
+// global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal server error',
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    })
+})
 
 
 

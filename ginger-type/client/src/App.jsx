@@ -10,13 +10,21 @@ import Profile from "./pages/Profile.jsx";
 import Stats from "./pages/Stats.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
+import SettingsModal from "./components/Settings/SettingsModal.jsx";
+import ShareResult from "./components/ShareResult/ShareResult.jsx";
 
 
 function App() {
   const [restartSignal, setRestartSignal] = useState(0);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const [lastResult, setLastResult] = useState(null);
+  const [showShare, setShowShare] = useState(false);
 
   const handleRestart = () => setRestartSignal((prev) => prev + 1);
+
 
   useEffect(() => {
     if (!isHelpOpen) return;
@@ -37,18 +45,22 @@ function App() {
   return (
     <div className="app-wrapper">
       <Navbar />
-
       <main className="content-area">
         <Routes>
           <Route
             path="/"
-            element={<MainBody restartSignal={restartSignal} />}
+            element={
+              <MainBody
+                restartSignal={restartSignal}
+                onResultSaved={setLastResult}
+              />
+            }
           />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />;
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </main>
@@ -56,7 +68,18 @@ function App() {
       <Footer
         onRestart={handleRestart}
         onOpenHelp={() => setIsHelpOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onShareResult={() => setShowShare(true)}
       />
+
+      {showShare && lastResult && (
+        <ShareResult
+          wpm={lastResult.wpm}
+          accuracy={lastResult.accuracy}
+          duration={lastResult.duration}
+          onClose={() => setShowShare(false)}
+        />
+      )}
 
       {isHelpOpen && (
         <div className="help-overlay" onClick={() => setIsHelpOpen(false)}>
@@ -86,6 +109,10 @@ function App() {
             </div>
           </div>
         </div>
+      )}
+      {/* // Settings */}
+      {isSettingsOpen && (
+        <SettingsModal onClose={() => setIsSettingsOpen(false)} />
       )}
     </div>
   );

@@ -3,11 +3,11 @@ const router = express.Router()
 const Result = require('../models/Result')
 const mongoose = require('mongoose')
 
-// WPM + accuracy trend (last 20 results)
+// WPM + accuracy trend (last 10 results)
 router.get('/trend', async (req, res) => {
     const results = await Result.find({ userId: req.user.userId })
         .sort({ createdAt: -1 })
-        .limit(20)
+        .limit(10)
         .select('wpm accuracy createdAt')
 
     res.json(results.reverse())

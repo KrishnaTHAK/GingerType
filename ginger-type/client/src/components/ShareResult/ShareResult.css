@@ -1,0 +1,132 @@
+.share-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.share-modal {
+    background: var(--card-bg, #f5f0e8);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.share-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.share-header h2 { margin: 0; }
+
+.close-icon {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
+/* Result Card */
+.result-card {
+    background: linear-gradient(135deg, #5f8a8b, #3a6b6c);
+    border-radius: 12px;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.result-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.result-card-logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.result-card-duration {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    background: rgba(255,255,255,0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+}
+
+.result-card-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.result-card-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.result-card-value {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.result-card-label {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.result-card-divider {
+    width: 1px;
+    height: 60px;
+    background: rgba(255,255,255,0.3);
+}
+
+.result-card-footer {
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+/* Action Buttons */
+.share-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.share-btn {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.share-btn.copy {
+    background: #f5f0e8;
+    border: 1px solid #ccc;
+}
+
+.share-btn.download {
+    background: #5f8a8b;
+    color: white;
+}
+
+.share-btn:hover { opacity: 0.85; }

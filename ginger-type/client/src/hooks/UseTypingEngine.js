@@ -215,6 +215,15 @@ export function useTypingEngine(text, durationSeconds, restartSignal) {
                 typedCharsRef.current.push(pressed);
             }
 
+             // sound effect
+            const soundEnabled = localStorage.getItem('sound') === 'true'
+            if (soundEnabled) {
+                const audio = new Audio('/click.mp3')
+                audio.volume = 0.2
+                audio.play().catch(() => {})
+            }
+
+
             cursorRef.current = Math.min(cursorRef.current + 1, characters.length);
             scheduleSync();
         };
