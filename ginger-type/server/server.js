@@ -82,7 +82,7 @@ app.get('/auth/google/callback',
             { expiresIn: '24h' }
         )
         // redirect to frontend with token
-        res.redirect(`http://localhost:3000?token=${token}`)
+        res.redirect(`${process.env.CLIENT_URL}?token=${token}`)
     })
 )
 
