@@ -86,7 +86,7 @@ function Register() {
 
             <div className="auth-divider">or</div>
 
-            <a href="http://localhost:8080/auth/google" className="google-btn">
+            <a href={`${import.meta.env.VITE_API_URL}/auth/google`} className="google-btn">
             Continue with Google
             </a>
         </div>

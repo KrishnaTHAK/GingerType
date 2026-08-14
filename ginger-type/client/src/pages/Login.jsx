@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 import "./Auth.css";
@@ -10,6 +10,10 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    // check if user just came from email verification link
+    const [searchParams] = useSearchParams()
+    const justVerified = searchParams.get('verified') === 'true'
 
     const handleChange = (e) =>
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,6 +40,11 @@ function Login() {
             <p className="auth-subtitle">Login to GingerType</p>
 
             {error && <div className="auth-error">{error}</div>}
+
+            {/* show a nice message if the user just verified their email */}
+            {justVerified && (
+                <div className="auth-success">Email verified successfully! You can now log in.</div>
+            )}
 
             <form onSubmit={handleSubmit}>
             <div className="auth-field">
@@ -73,7 +82,7 @@ function Login() {
 
             <div className="auth-divider">or</div>
 
-            <a href="http://localhost:8080/auth/google" className="google-btn">
+            <a href={`${import.meta.env.VITE_API_URL}/auth/google`} className="google-btn">
             Continue with Google
             </a>
         </div>

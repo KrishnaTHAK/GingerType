@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/navbar/Navbar.jsx";
 import MainBody from "./components/mainBody/MainBody.jsx";
@@ -12,16 +12,51 @@ import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import SettingsModal from "./components/Settings/SettingsModal.jsx";
 import ShareResult from "./components/ShareResult/ShareResult.jsx";
+import { useAuth } from "./context/AuthContext";
+import api from "./utils/api";
 
 
 function App() {
   const [restartSignal, setRestartSignal] = useState(0);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  // Fix for Google OAuth: when Google redirects back to our site,
+  // it puts the JWT token in the URL like /?token=abc123
+  // we need to grab it, fetch the user info, and log them in
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tokenFromGoogle = params.get('token')
+
+    if (tokenFromGoogle) {
+      // store token temporarily so the api.js interceptor can use it
+      localStorage.setItem('token', tokenFromGoogle)
+
+      // now fetch the user profile using this token
+      api.get('/auth/profile')
+        .then((res) => {
+          // log the user in properly with token + user data
+          login(tokenFromGoogle, {
+            id: res.data._id,
+            username: res.data.username,
+            email: res.data.email,
+            avatarUrl: res.data.avatarUrl
+          })
+          // clean up the URL so it doesn't look weird
+          navigate('/', { replace: true })
+        })
+        .catch((err) => {
+          console.log('Google OAuth login failed:', err)
+          // clean up the bad token
+          localStorage.removeItem('token')
+        })
+    }
+  }, [])
 
   const [lastResult, setLastResult] = useState(null);
   const [showShare, setShowShare] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleRestart = () => setRestartSignal((prev) => prev + 1);
 

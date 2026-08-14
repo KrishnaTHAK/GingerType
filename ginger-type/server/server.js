@@ -111,8 +111,13 @@ app.get('/api/auth/verify/:token', asyncHandler(async (req, res) => {
         { isVerified: true, verificationToken: null },
         { new: true }
     )
+
+    // if token is wrong or expired, just say so
     if (!user) return res.status(400).json({ message: 'Invalid or expired token' })
-    res.json({ message: 'Email verified successfully!' })
+
+    // redirect the user back to the login page with a success flag
+    // so we can show them a nice message instead of raw JSON
+    res.redirect(`${process.env.CLIENT_URL}/login?verified=true`)
 }))
 
 
@@ -121,11 +126,28 @@ app.post('/api/auth/login', asyncHandler(async (req, res) => {
     const { username, password } = req.body
     const user = await User.findOne({ username })
 
-    if (!user || !(await bcrypt.compare(password, user.password)))
+    // if user doesn't exist at all
+    if (!user) return res.status(400).json({ message: 'Invalid username or password' })
+
+    // if this user signed up with Google they won't have a password field
+    // so we can't let them log in with username/password
+    if (!user.password) {
+        return res.status(400).json({ message: 'This account uses Google Sign-In. Please use the Google login button.' })
+    }
+
+    // check if the password is correct
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if (!passwordMatch) {
         return res.status(400).json({ message: 'Invalid username or password' })
+    }
+
+    // make sure the user verified their email first
+    if (!user.isVerified) {
+        return res.status(400).json({ message: 'Please verify your email before logging in. Check your inbox!' })
+    }
 
     const token = jwt.sign(
-        { userId: user._id.toString(), username: user.username },  // add .toString()
+        { userId: user._id.toString(), username: user.username },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
     )
@@ -135,7 +157,7 @@ app.post('/api/auth/login', asyncHandler(async (req, res) => {
             id: user._id, 
             username: user.username, 
             email: user.email,
-            avatarUrl: user.avatarUrl  // add this
+            avatarUrl: user.avatarUrl
         } 
     })
 }))

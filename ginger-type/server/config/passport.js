@@ -24,13 +24,28 @@ passport.use(new GoogleStrategy({
         }
 
         // create new user
+        // first figure out a username from their google display name
+        let baseUsername = profile.displayName.replace(/\s+/g, '').toLowerCase()
+        let username = baseUsername
+
+        // keep trying until we find a username that isn't taken
+        // this handles the case where two people have the same google name
+        let usernameExists = await User.findOne({ username })
+        while (usernameExists) {
+            // just slap a random 4-digit number at the end
+            let randomNum = Math.floor(1000 + Math.random() * 9000)
+            username = baseUsername + randomNum
+            usernameExists = await User.findOne({ username })
+        }
+
         user = await User.create({
             googleId:  profile.id,
             email:     profile.emails[0].value,
-            username:  profile.displayName.replace(/\s+/g, '').toLowerCase(),
+            username:  username,
             avatarUrl: profile.photos[0].value,
             isVerified: true
         })
+
 
         done(null, user)
     } catch (err) {
